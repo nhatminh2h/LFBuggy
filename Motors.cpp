@@ -1,16 +1,14 @@
+#include "mbed.h"
+
 class motor{
     private:
-        InterruptIn _encoder;
         DigitalOut bipol, direction;
         PwmOut speed;
-        int count;
 
     public:
-        motor (PinName JP1A_1_4, PinName JP1A_2_5, PinName JP1A_3_6, PinName encoder) 
-                : bipol(JP1A_1_4), direction(JP1A_2_5), speed(JP1A_3_6), _encoder(encoder) 
+        motor (PinName JP1A_1_4, PinName JP1A_2_5, PinName JP1A_3_6) 
+                : bipol(JP1A_1_4), direction(JP1A_2_5), speed(JP1A_3_6) 
         {
-            count = 0;
-            _encoder.rise(callback(this, &motor::increment));
             speed.period_us(50);//set PWM frequency to ~ 20kHz
             off();
         }
@@ -23,9 +21,6 @@ class motor{
     
         void setSpeed(float dutycycle){speed.write(dutycycle);}//set duty cycle
         float getSpeed(){return speed.read();}
-    
-        void increment(void){count++;}
-        int getcount(void){return count;}
     
         void clockwise(float dutycycle){
             setBipol(0);//unipolar
@@ -45,3 +40,5 @@ class motor{
             setSpeed(1);
         }
 };
+
+

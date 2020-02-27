@@ -1,15 +1,21 @@
+#include "Motors.cpp"
+#include "encoder.cpp"
+
 class drive{
     private:
+        DigitalOut enable;
         motor *left;
         motor *right;
-        DigitalOut enable;
+        encoder *leftEn;
+        encoder *rightEn;
     public:
-        drive(PinName JP1A_7, motor *left, motor *right)
+        drive(PinName JP1A_7, motor *left, motor *right, encoder *leftEn, encoder *rightEn)
         : enable(JP1A_7), left(left), right(right){
-            drive::off();
+            drive::turnoff();
         }
 
-        void turnon(void){enable=1;}
+        void turnon(void){enable = 1;}
+        void turnoff(void){enable = 0;}
         
         void forward(float PWM){ 
             left -> clockwise(PWM);
@@ -24,20 +30,16 @@ class drive{
         }
 
         void turnright(float PWM, int turn){
+            left -> clockwise(PWM);
+            right -> counterclockwise(PWM);
+            
             drive::turnon();
-            int leftcount = 0, rightcount = 0;
-            while (leftcount < turn || rightcount < turn){
-                left -> clockwise(PWM);
-                right -> counterclockwise(PWM);
-                leftcount = left -> getcount();
-                rightcount = right -> getcount();
-            }
-            drive::off();
         }
 
         void turnleft(float PWM){
-            left -> off();
+            left -> counterclockwise(PWM);
             right -> clockwise(PWM);
+            drive:turnon();
         }
 
         void turn180(float PWM){ 
@@ -45,6 +47,4 @@ class drive{
             right -> counterclockwise(PWM);
         }
         
-        void turnoff(void){enable = 0;}
-
 };
